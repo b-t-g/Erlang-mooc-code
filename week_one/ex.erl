@@ -114,12 +114,15 @@ calculate_slopes({X1, Y1}, {X2, Y2}) ->
     Slope_perp = -1/(Slope_base),
     {Slope_base, Slope_perp}.
 
+%% Given an array of two points in 2-D space along with the distance between them,
+%% find the longest length.
 extremal_length(Lengths) ->
-    lists:foldl(fun augment_max/2, {0, {0,0}, {0,0}}, Lengths).
+    lists:foldl(fun max_length/2, {0, {0,0}, {0,0}}, Lengths).
 
-augment_max({L1, {X1, Y1}, {X2, Y2}}, {L2, {_X3, _Y3}, {_X4, _Y4}}) when L1 > L2 ->
+%% Compare two lengths between two points in 2-D space by their lengths.
+max_length({L1, {X1, Y1}, {X2, Y2}}, {L2, {_X3, _Y3}, {_X4, _Y4}}) when L1 > L2 ->
 	{L1, {X1, Y1}, {X2, Y2}};
-augment_max({L1, {_X1, _Y1}, {_X2, _Y2}}, {L2, {X3, Y3}, {X4, Y4}}) when L2 >= L1 ->
+max_length({L1, {_X1, _Y1}, {_X2, _Y2}}, {L2, {X3, Y3}, {X4, Y4}}) when L2 >= L1 ->
 	{L2, {X3, Y3}, {X4, Y4}}.
 
 %% Test two relatively straightforward cases for enclose for the triangle case.
