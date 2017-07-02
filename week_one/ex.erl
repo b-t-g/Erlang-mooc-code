@@ -102,6 +102,9 @@ opposite_vertex({Last_x, Last_y}, {X1, Y1}, Slope_base, Slope_perp) ->
     X_value = (Perp_y_intercept - Parallel_y_intercept)/(Slope_base - Slope_perp),
     {X_value, Slope_base*X_value + Parallel_y_intercept}.
 
+%% Calculate the slope of a line between two points as well as the
+%% line perpendicular to that line.
+%%
 %% This shows the benefit of representing a triangle by its points;
 %% we are able to calculate the slope of the lines which would
 %% have been much more difficult with any other representation.
