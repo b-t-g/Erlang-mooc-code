@@ -17,6 +17,7 @@ bits(X) when X == 0; X == 1 ->
     X;
 %% If we got here, then X must not be 0 or 1.
 bits(X) ->
+    %% X ^ (X & ~(X - 1)) removes the least significant bit.
     1 + bits(X bxor (X band (bnot (X - 1)))).
 
 bits_iterative(X) ->
@@ -25,7 +26,6 @@ bits_iterative(X) ->
 bits_iterative(X, Y) when X == 0; X == 1 ->
     Y;
 bits_iterative(X, Y) ->
-    %% X ^ (X & ~(X - 1)) removes the least significant bit.
     Lsb_cleared = X bxor (X band (bnot (X - 1))),
     bits_iterative(Lsb_cleared, Y + 1).
 
