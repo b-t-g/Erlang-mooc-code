@@ -9,19 +9,20 @@ main(File_handle) ->
     Split = lists:map(fun(Str) -> lists:filter(fun(X) -> length(X) > 0 end,
 					       string:split(Str, " ", all)) end,
 		      Contents),
-    Word_count = add_word_occurence(Split),
-    Formatted_list = maps:to_list(maps:map(fun(K, V) -> compress_list(V) end, Word_count)),
-    lists:sort(fun({A, Xs}, {B, Ys}) -> A =< B end, 
-	      lists:filter(fun({A, Xs}) -> length(A) > 2 end, Formatted_list)).
+    Word_count = add_word_occurrence(Split),
+    Formatted_list = maps:to_list(maps:map(fun(_K, V) -> compress_list(V) end, Word_count)),
+    lists:sort(fun({A, _Xs}, {B, _Ys}) -> A =< B end, 
+	      lists:filter(fun({A, _Xs}) -> length(A) > 2 end, Formatted_list)).
     
 
 -spec add_word_occurrence([string()]) -> #{string() => [integer()]}.
-add_word_occurence(Lines) ->
+add_word_occurrence(Lines) ->
     add_word_occurrence(Lines, 1, #{}).
 
 %% Add the line number to each word in a line.
+%% ex. add_word_occurrence(["foo", "bar", "baz"], 3) -> #{"foo" -> [3], "bar" -> [3], "baz" -> [3]}
 add_word_occurrence([Line | Rest], Line_num, Acc) ->
-    add_word_occurence(Rest, Line_num + 1,
+    add_word_occurrence(Rest, Line_num + 1,
 	lists:foldl(fun(Word, Map) ->
 			    Current = maps:get(Word, Map, []),
 			    New = case Current =:= [] orelse Line_num /= lists:nth(1, Current) of
@@ -47,10 +48,11 @@ is_letter(Elem) ->
     Elem == 32 orelse Elem >= 65 andalso Elem =< 90 orelse
 	Elem >= 97 andalso Elem =< 122.
 
--spec compress_list([integer()]) -> [[integer()]].
+%% Convert a list of line numbers into the correct format.
+%% ex: index_file:compress_list([10, 9, 8, 5, 4, 1]) -> [{1, 1}, {4, 5}, {8, 10}]
+-spec compress_list([integer()]) -> [{integer(), integer()}].
 compress_list(L) ->
     lists:foldl(fun accumulate/2, [], L).
-    
     
 %% Take a number and a list of integer pairs, if the incoming number is one less
 %% than the most recently encountered lowest number, then replace the entry with
@@ -69,4 +71,3 @@ accumulate(Line_num, [X | Xs] = Acc) ->
 	1 -> [{Line_num, Upper} | Xs];
 	_ -> [{Line_num, Line_num}, X | Xs]
     end.
-				 
